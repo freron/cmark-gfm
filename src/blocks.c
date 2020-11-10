@@ -1008,6 +1008,15 @@ static bool parse_extension_block(cmark_parser *parser,
   return res;
 }
 
+static bool is_sig_line(cmark_parser *parser, cmark_chunk *input) {
+  return
+    // parser->options & CMARK_OPT_? &&
+    input->len - parser->first_nonspace == 4 &&
+    peek_at(input, parser->first_nonspace) == '-' &&
+    peek_at(input, parser->first_nonspace+1) == '-' &&
+    peek_at(input, parser->first_nonspace+2) == ' ';
+}
+
 /**
  * For each containing node, try to parse the associated line start.
  *
@@ -1056,6 +1065,8 @@ static cmark_node *check_open_blocks(cmark_parser *parser, cmark_chunk *input,
         goto done;
       break;
     case CMARK_NODE_PARAGRAPH:
+      if(is_sig_line(parser, input))
+        goto done;
       if (parser->blank)
         goto done;
       break;
