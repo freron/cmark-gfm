@@ -1329,13 +1329,15 @@ static void add_text_to_container(cmark_parser *parser, cmark_node *container,
     tmp = tmp->parent;
   }
 
-  // If the last line processed belonged to a paragraph node,
+  // If we are not in hard line break mode
+  // and the last line processed belonged to a paragraph node,
   // and we didn't match all of the line prefixes for the open containers,
   // and we didn't start any new containers,
   // and the line isn't blank,
   // then treat this as a "lazy continuation line" and add it to
   // the open paragraph.
-  if (parser->current != last_matched_container &&
+  if (!(parser->options & CMARK_OPT_HARDBREAKS) &&
+	  parser->current != last_matched_container &&
       container == last_matched_container && !parser->blank &&
       S_type(parser->current) == CMARK_NODE_PARAGRAPH) {
     add_line(parser->current, input, parser);
